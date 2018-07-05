@@ -297,10 +297,11 @@ internal fun KotlinType.getFunctionalInterfaceType(source: UElement, element: Kt
 
 internal fun KotlinULambdaExpression.getFunctionalInterfaceType(): PsiType? {
     val parent = psi.parent
-    return when (parent) {
-        is KtBinaryExpressionWithTypeRHS -> parent.right?.getType()?.getFunctionalInterfaceType(this, psi)
-        else -> psi.getExpectedType()?.getFunctionalInterfaceType(this, psi)
-    }
+    return if (parent is KtBinaryExpressionWithTypeRHS) parent.right?.getType()?.getFunctionalInterfaceType(this, psi)
+    else psi.getExpectedType()?.getFunctionalInterfaceTypeOrPsiType(this, psi)
 }
+
+private fun KotlinType.getFunctionalInterfaceTypeOrPsiType(source: UElement, element: KtElement): PsiType? =
+    getFunctionalInterfaceType(source, element) ?: lowerIfFlexible().toPsiType(null, element, true)
 
 internal fun unwrapFakeFileForLightClass(file: PsiFile): PsiFile = (file as? FakeFileForLightClass)?.ktFile ?: file
