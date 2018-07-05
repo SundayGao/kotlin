@@ -45,12 +45,17 @@ internal abstract class ConstantStringBasedPostfixTemplate(
     override fun getElementToRemove(expr: PsiElement?) = expr
 }
 
-internal class KtWrapWithCallPostfixTemplate(val functionName: String) : ConstantStringBasedPostfixTemplate(
+internal abstract class KtWrapWithCallPostfixTemplate(val functionName: String) : ConstantStringBasedPostfixTemplate(
     functionName,
     "$functionName(expr)",
     "$functionName(\$expr$)\$END$",
     createExpressionSelectorWithComplexFilter { expression, _ -> expression !is KtReturnExpression }
 )
+
+internal object KtWrapWithListOfPostfixTemplate : KtWrapWithCallPostfixTemplate("listOf")
+internal object KtWrapWithSetOfPostfixTemplate : KtWrapWithCallPostfixTemplate("setOf")
+internal object KtWrapWithArrayOfPostfixTemplate : KtWrapWithCallPostfixTemplate("arrayOf")
+internal object KtWrapWithSequenceOfPostfixTemplate : KtWrapWithCallPostfixTemplate("sequenceOf")
 
 internal class KtForEachPostfixTemplate(
     name: String
